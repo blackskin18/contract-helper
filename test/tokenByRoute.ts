@@ -10,8 +10,9 @@ const keccak256 = require('keccak256')
 import {
   expandDecimals,
   numberToWei,
-  deployContract
+  deployContract, parseSqrtX96
 } from "../shared/utils"
+import {BSC_ADDRESS} from "../shared/constants/addresses";
 
 use(solidity)
 
@@ -30,18 +31,80 @@ describe("bot-test", () => {
     }
   }
 
-  it('Check merkle tree with 1 element', async () => {
+  it('Get price with route v2 ', async () => {
     const {pairDetailV3} = await loadFixture(getFixture)
 
-    const a = await pairDetailV3.query([
-      '0xbae622d0FA237a5105b0C445864A419620a59D83',
-      '0x7FE20C1b2C726B2384F44DdE3CA91eE430650d09',
-      '0x31C77F72BCc209AD00E3B7be13d719c08cb7BA7B',
-      '0x92Fe0733C1219d1d76b09eEd091914050430AbbE',
-      '0x49B355Bb422dC456314D160C353416afBcAF2996'
-    ], '0x0000110000000000000000000000000000000000000000000000000000000111')
+    const res = await pairDetailV3.fetchMarket(
+      BSC_ADDRESS.WBNB,
+      BSC_ADDRESS.BUSD,
+      [
+        {
+          version: 2,
+          uniPool: '0x014608E87AF97a054C9a49f81E1473076D51d9a3',
+        },
+        {
+          version: 2,
+          uniPool: '0x0E91275Aec7473105c8509BC41AE54b8FE8a7Fc3',
+        }
+      ]
+    )
 
-    console.log(a)
+    const price = parseSqrtX96(res, {decimal: 18}, {decimal: 18})
+    console.log('price BNB / USD', price)
+  })
+
+  it('Get price with route v3 ', async () => {
+    const {pairDetailV3} = await loadFixture(getFixture)
+
+    const res = await pairDetailV3.fetchMarket(
+      BSC_ADDRESS.WBNB,
+      BSC_ADDRESS.ETH,
+      [
+        {
+          version: 3,
+          uniPool: '0x85FAac652b707FDf6907EF726751087F9E0b6687',
+        },
+        {
+          version: 3,
+          uniPool: '0xBe141893E4c6AD9272e8C04BAB7E6a10604501a5',
+        },
+      ]
+    )
+
+    const price = parseSqrtX96(res, {decimal: 18}, {decimal: 18})
+    console.log('price BNB / ETH (v3)', price)
+
+  })
+
+  it('Get price with mixed route ', async () => {
+    const {pairDetailV3} = await loadFixture(getFixture)
+
+    const res = await pairDetailV3.fetchMarket(
+      BSC_ADDRESS.WBNB,
+      BSC_ADDRESS.ETH,
+      [
+        {
+          version: 2,
+          uniPool: '0x014608E87AF97a054C9a49f81E1473076D51d9a3',
+        },
+        {
+          version: 2,
+          uniPool: '0x0E91275Aec7473105c8509BC41AE54b8FE8a7Fc3',
+        },
+        {
+          version: 2,
+          uniPool: '0x7EFaEf62fDdCCa950418312c6C91Aef321375A00',
+        },
+
+        {
+          version: 3,
+          uniPool: '0xBe141893E4c6AD9272e8C04BAB7E6a10604501a5',
+        },
+      ]
+    )
+
+    const price = parseSqrtX96(res, {decimal: 18}, {decimal: 18})
+    console.log('price BNB / ETH (mix v2 & v3)', price)
   })
 
 })

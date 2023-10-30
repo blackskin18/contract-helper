@@ -1,9 +1,9 @@
 import { ethers } from "hardhat";
 import { BN } from "bn.js";
 import {MerkleTree} from "merkletreejs";
+import {BigNumber} from "ethers";
 
 const  keccak256 = require('keccak256')
-const {BigNumber} = ethers
 
 async function deployContract(name, args) {
     const contractFactory = await ethers.getContractFactory(name)
@@ -148,6 +148,16 @@ const genMerkleTree = (whitelistAddress: string[]) => {
         root,
         proofs: result
     }
+}
+
+export const parseSqrtX96 = (price: BigNumber, baseToken: {decimal: number}, quoteToken: {decimal: number}) => {
+    return weiToNumber(
+      price
+        .mul(price)
+        .mul(numberToWei(1, baseToken.decimal + 18))
+        .shr(192),
+      quoteToken.decimal + 18,
+    )
 }
 
 export { sendTxn, contractAt, deployContract, expandDecimals, bigNumberify, getPriceBits, getExpandedPrice, getBlockTime, toUsd, mineBlock, increaseTime, priceUpdateAndExcute, encode, genMerkleTree }

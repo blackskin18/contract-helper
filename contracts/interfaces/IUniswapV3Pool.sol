@@ -10,7 +10,10 @@ interface IUniswapV3Pool {
         uint16 observationIndex,
         uint16 observationCardinality,
         uint16 observationCardinalityNext,
-        uint8 feeProtocol,
+        uint feeProtocol,
         bool unlocked
     );
+
+    function token0() external view returns (address);
+    function token1() external view returns (address);
 }

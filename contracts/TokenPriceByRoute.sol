@@ -21,15 +21,20 @@ contract TokenPriceByRoute {
         address tokenBase,
         address tokenQuote,
         Route[] calldata routes
-    ) public view returns (uint sqrtPriceX96) {
-        uint price = 1 << 96;
+    ) public view returns (uint price) {
+        price = 1 << 96;
+        uint _priceRes;
 
-        address token = tokenBase;
+        address _token = tokenBase;
 
         for(uint i; i < routes.length; i++) {
             if(routes[i].version == 2) {
-                (price, token) = _getTokenPriceV2(token, routes[i].uniPool);
-                price = price >> 96;
+                (_priceRes, _token) = _getTokenPriceV2(routes[i].uniPool, _token);
+                price = price * _priceRes >> 96;
+            }
+            if(routes[i].version == 3) {
+                (_priceRes, _token) = _getTokenPriceV3(routes[i].uniPool, _token);
+                price = price * _priceRes >> 96;
             }
         }
     }
@@ -40,19 +45,22 @@ contract TokenPriceByRoute {
         nextToken = IUniswapV2Pair(pool).token1();
 
         sqrtPriceX96 = _sqrtPriceX96(r0, r1);
+
         if (token != _token0) {
             sqrtPriceX96 = (1 << 192) / sqrtPriceX96;
             nextToken = _token0;
         }
     }
 
-    function _getTokenPriceV3(address pool, address token, address otherToken) internal view returns (uint sqrtPriceX96) {
+    function _getTokenPriceV3(address pool, address token) internal view returns (uint sqrtPriceX96, address nextToken) {
         (uint160 price,,,,,,) = IUniswapV3Pool(pool).slot0();
+        address _token0 = IUniswapV3Pool(pool).token0();
+        nextToken = IUniswapV3Pool(pool).token1();
 
         sqrtPriceX96 = uint(price);
-        if (token > otherToken) {
+        if (token != _token0) {
             sqrtPriceX96 = (1 << 192) / sqrtPriceX96;
-
+            nextToken = _token0;
         }
     }
 

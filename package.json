@@ -6,7 +6,7 @@
   "scripts": {
     "compile": "hardhat compile",
     "test": "hardhat test",
-    "test:buyPackage": "hardhat test ./test/buyPackage.spec.ts",
+    "test:tokenPrice": "hardhat test ./test/tokenByRoute.ts",
     "test:airdrop": "hardhat test ./test/airdrop.spec.ts",
     "test:bocoAirdrop": "hardhat test ./test/bocoAirdrop.spec.ts",
     "solhint": "solhint -f table contracts/**/*.sol",
@@ -53,6 +53,7 @@
     "@uniswap/v3-core": "^1.0.1",
     "chai": "^4.3.8",
     "dotenv": "^16.0.3",
+    "ethers": "^5.5.4",
     "keccak256": "^1.0.6",
     "merkletreejs": "^0.3.10"
   }

@@ -34,8 +34,7 @@ const config: HardhatUserConfig = {
   networks: {
     hardhat: {
       forking: {
-        url: "https://eth.llamarpc.com",
-        blockNumber: 18119255,
+        url: "https://bsc-dataseed2.defibit.io",
       },
       blockGasLimit: 0x1fffffffffff,
       gasPrice: 0,
