@@ -4,19 +4,32 @@ import "@nomiclabs/hardhat-etherscan";
 import "@nomiclabs/hardhat-waffle";
 import "@openzeppelin/hardhat-upgrades";
 import "hardhat-deploy";
-import { HardhatUserConfig } from "hardhat/config";
+import {HardhatUserConfig} from "hardhat/config";
 
 dotenv.config();
 
 const config: HardhatUserConfig = {
   solidity: {
-    version: "0.8.11",
-    settings: {
-      optimizer: {
-        enabled: true,
-        runs: 256
+    compilers: [
+      {
+        version: "0.8.13",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 1000000,
+          },
+        },
+      },
+      {
+        version: "0.6.6",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 1000000,
+          },
+        },
       }
-    }
+    ]
   },
   networks: {
     hardhat: {
@@ -30,7 +43,7 @@ const config: HardhatUserConfig = {
       allowUnlimitedContractSize: true,
       chainId: 1337,
       accounts: {
-        count:50
+        count: 50
       }
     },
     ropsten: {
