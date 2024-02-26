@@ -17,7 +17,30 @@ contract TokenPriceByRoute {
         uint version;
     }
 
-    function fetchMarket(
+    struct Params {
+        address tokenBase;
+        address tokenQuote;
+        Route[] routes;
+    }
+
+    struct ReturnValues {
+        address tokenBase;
+        address tokenQuote;
+        uint price;
+    }
+
+    function fetchPrices(
+        Params[] calldata params
+    ) public view returns (uint[] memory) {
+        uint[] memory results = new uint[](params.length);
+
+        for(uint i; i< params.length; i++) {
+            results[i] = fetchPrice(params[i].tokenBase, params[i].tokenQuote, params[i].routes);
+        }
+        return results;
+    }
+
+    function fetchPrice(
         address tokenBase,
         address tokenQuote,
         Route[] calldata routes
